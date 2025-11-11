@@ -18,7 +18,6 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages rtp)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages textutils)
