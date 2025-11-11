@@ -12,6 +12,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
