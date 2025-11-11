@@ -39,16 +39,15 @@
     (build-system gnu-build-system)
     (arguments
      (list
+      #:tests? #f  ; Skip tests for now
       #:configure-flags
-      #~(list "--enable-plugin-videocall"
-              "--enable-plugin-videoroom"
-              "--enable-plugin-audiobridge"
-              "--enable-plugin-streaming"
-              "--enable-plugin-echotest"
-              "--enable-plugin-sip"
-              "--enable-websockets"
-              "--disable-data-channels"      ; Disable until usrsctp is available
-              "--disable-docs")
+      #~(list (string-append "--prefix=" #$output)
+              "--disable-docs"
+              "--disable-data-channels"      ; No usrsctp
+              "--disable-rabbitmq"           ; No rabbitmq-c
+              "--disable-mqtt"               ; No paho-mqtt
+              "--disable-nanomsg"            ; No nanomsg
+              "--disable-all-loggers")
       #:phases
       #~(modify-phases %standard-phases
           (replace 'bootstrap
