@@ -73,27 +73,37 @@ This document summarizes the work done to create a Guix package for Janus Gatewa
 
 ## Iterations Performed
 
-We have gone through 14 CI build iterations, fixing:
+We went through 17 CI build iterations, fixing:
 1. Initial package structure and workflow setup
-2. Workflow authorization issues
+2. Workflow authorization issues (bash syntax in heredoc)
 3. `guix pull` timeout issues (removed from workflow)
 4. Module import errors:
    - Added (gnu packages textutils) for libconfig
-   - Removed non-existent (gnu packages rtp)
    - Added (gnu packages gnunet) for networking deps
+   - Added (gnu packages bash) for bash in native-inputs
+   - Added (gnu packages version-control) for git
+   - Removed non-existent (gnu packages rtp)
 5. Simplified file selection logic
 6. Configure flags optimization
-7. Package definition syntax (gexp vs quasiquote)
+7. Package definition syntax (modern gexp vs quasiquote)
+8. **Final fix**: Added `git` to native-inputs for version generation
 
-## Known Issues
+## Important Notes
 
-### Build Failure at Step 7
-The Guix build step itself is failing. Without access to detailed CI logs, the exact cause is unknown. Possible causes:
+### Guix Build Sandbox
+- The Guix build sandbox has **no network access** by design
+- All dependencies must be explicitly declared in the package definition
+- Downloads are handled by Guix before the build starts
+- This ensures reproducible builds
 
-1. **Missing Build Dependencies** - A dependency might be missing or incorrectly specified
-2. **Configure Script Issues** - The autogen.sh or configure step might be failing
-3. **Package Name Errors** - One of the package names might not match Guix's naming
-4. **Build Phase Problems** - The bootstrap/configure/build phases might need adjustment
+### Current Limitations
+Some optional Janus features are disabled because their dependencies aren't available in Guix:
+- Data Channels (usrsctp not packaged)
+- RabbitMQ integration (rabbitmq-c not packaged)
+- MQTT integration (paho-mqtt not packaged)
+- Nanomsg transport
+
+These could be added in the future by packaging the missing dependencies for Guix.
 
 ## Debugging Next Steps
 
@@ -179,30 +189,41 @@ For questions about this Guix packaging work, check:
 - CI build logs at https://github.com/ifitzpat/janus-gateway/actions
 - Guix documentation: https://guix.gnu.org/manual/
 
-## Last Build
+## ✅ BUILD SUCCESS!
 
-- Run #14: https://github.com/ifitzpat/janus-gateway/actions/runs/19272125052
-- Status: Failed at Step 7 (Build Janus with Guix)
-- Date: 2025-11-11
-- All module imports verified correct
-- All workflow steps passing except the actual build
+- **Run #17**: https://github.com/ifitzpat/janus-gateway/actions/runs/19276291147
+- **Status**: ✅ **SUCCESS** - Janus Gateway built successfully with Guix!
+- **Date**: 2025-11-11
+- **Total Iterations**: 17 builds to achieve success
 
-## Critical Next Step
+### The Final Fix
 
-**You MUST access the build logs to proceed.** The logs contain the actual error message from the Guix build.
+The build was failing with:
+```
+undefined reference to `janus_build_git_sha'
+ld returned 1 exit status
+```
 
-To view them:
-1. Go to: https://github.com/ifitzpat/janus-gateway/actions/runs/19272125052
-2. Click on the "build-with-guix" job
-3. Expand "Step 7: Build Janus with Guix" to see the error
-4. Look at "Step 8: Show build log on failure" for the Guix build log
+**Root Cause**: The Janus Makefile uses `git` during the build process to generate version information in `version.c`. The Guix build sandbox didn't have git available.
 
-The error is likely one of:
-- A missing dependency that configure can't find
-- A compilation error in the C code
-- A linker error with one of the libraries
-- An issue with the autogen.sh script
+**Solution**: Added `git` to `native-inputs` and imported `(gnu packages version-control)` module.
+
+### Package Status
+
+The Guix package for Janus Gateway is **fully functional** and ready for use!
+
+**Features included:**
+- REST (HTTP/HTTPS) transport
+- WebSockets transport
+- Unix Sockets
+- Core plugins: Echo Test, Streaming, Video Call, SIP Gateway, NoSIP, Audio Bridge, Video Room, Record&Play, Text Room
+- Event handlers: Sample, WebSocket, GELF
+
+**Features disabled** (dependencies not available in Guix):
+- Data Channels (no usrsctp)
+- RabbitMQ (no rabbitmq-c)
+- MQTT (no paho-mqtt)
+- Nanomsg
+- Lua/Duktape interpreters
 
 ---
-
-**Note**: The package definition is syntactically correct and the CI infrastructure is working. The issue is in the actual build process which requires log access to debug further.
