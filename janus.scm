@@ -25,19 +25,14 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages xiph)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages xiph))
 
 (define-public janus-gateway
   (package
     (name "janus-gateway")
     (version "1.4.0")
     (source (local-file "." "janus-gateway-checkout"
-                        #:recursive? #t
-                        #:select? (lambda (file stat)
-                                    (not (any (lambda (pattern)
-                                                (string-contains file pattern))
-                                              '(".git" "/.github/" "/guix-" ".log"))))))
+                        #:recursive? #t))
     (build-system gnu-build-system)
     (arguments
      (list
