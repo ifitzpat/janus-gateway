@@ -24,6 +24,7 @@
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xiph))
@@ -56,6 +57,7 @@
      (list autoconf
            automake
            bash
+           git
            libtool
            m4
            pkg-config
