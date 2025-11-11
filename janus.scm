@@ -15,6 +15,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages serialization)
@@ -22,7 +23,8 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages xiph))
+  #:use-module (gnu packages xiph)
+  #:use-module (srfi srfi-1))
 
 (define-public janus-gateway
   (package
@@ -30,8 +32,10 @@
     (version "1.4.0")
     (source (local-file "." "janus-gateway-checkout"
                         #:recursive? #t
-                        #:select? (or (git-predicate ".")
-                                      (const #t))))
+                        #:select? (lambda (file stat)
+                                    (not (any (lambda (pattern)
+                                                (string-contains file pattern))
+                                              '(".git" "/.github/" "/guix-" ".log"))))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -56,6 +60,7 @@
            automake
            bash
            libtool
+           m4
            pkg-config
            which))
     (inputs
