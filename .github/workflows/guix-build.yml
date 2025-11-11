@@ -59,8 +59,9 @@ jobs:
 
       - name: Update Guix channels
         run: |
-          guix pull --fallback
-          hash guix
+          # Skip guix pull - use channels from guix-install-action
+          echo "Using Guix channels configured by guix-install-action"
+          guix describe
 
       - name: Build Janus with Guix
         run: |
