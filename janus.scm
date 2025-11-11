@@ -35,6 +35,16 @@
     (build-system gnu-build-system)
     (arguments
      (list
+      #:configure-flags
+      #~(list "--enable-plugin-videocall"
+              "--enable-plugin-videoroom"
+              "--enable-plugin-audiobridge"
+              "--enable-plugin-streaming"
+              "--enable-plugin-echotest"
+              "--enable-plugin-sip"
+              "--enable-websockets"
+              "--disable-data-channels"      ; Disable until usrsctp is available
+              "--disable-docs")
       #:phases
       #~(modify-phases %standard-phases
           (replace 'bootstrap
@@ -49,21 +59,19 @@
            pkg-config
            which))
     (inputs
-     (list glib
+     (list curl
+           glib
            jansson
            libconfig
-           libnice
-           libsrtp
            libmicrohttpd
+           libnice
+           libogg
+           libsrtp
+           libwebsockets                ; For WebSocket transport
            openssl
            opus
-           libogg
-           curl
+           sofia-sip                    ; For SIP plugin
            zlib))
-           ;; Optional dependencies commented out until we verify their names:
-           ;; usrsctp                      ; For DataChannels support
-           ;; libwebsockets                ; For WebSocket support
-           ;; sofia-sip))                  ; For SIP plugin
     (synopsis "General purpose WebRTC server")
     (description
      "Janus is an open source, general purpose, WebRTC server designed and
