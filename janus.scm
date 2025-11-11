@@ -20,6 +20,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages telephony)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
